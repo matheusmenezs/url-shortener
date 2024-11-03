@@ -18,7 +18,7 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const usernameAlreadyExists = this.usersRepository.findByUsername(
+    const usernameAlreadyExists = await this.usersRepository.findByUsername(
       createUserDto.username,
     );
 
@@ -29,7 +29,7 @@ export class UsersService {
       });
     }
 
-    const emailAlreadyExists = this.usersRepository.findByEmail(
+    const emailAlreadyExists = await this.usersRepository.findByEmail(
       createUserDto.email,
     );
 
@@ -87,6 +87,32 @@ export class UsersService {
       });
     }
 
+    if (updateUserDto.username) {
+      const usernameAlreadyExists = await this.usersRepository.findByUsername(
+        updateUserDto.username,
+      );
+
+      if (usernameAlreadyExists) {
+        throw new BadRequestException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Username already exists',
+        });
+      }
+    }
+
+    if (updateUserDto.email) {
+      const userEmailAlreadyExists = await this.usersRepository.findByEmail(
+        updateUserDto.email,
+      );
+
+      if (userEmailAlreadyExists) {
+        throw new BadRequestException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Email already exists',
+        });
+      }
+    }
+
     const updatedUser = await this.usersRepository.updateById(
       id,
       updateUserDto,
@@ -95,7 +121,18 @@ export class UsersService {
     return new User(updatedUser);
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} user`;
+  async softDelete(id: string) {
+    const user = await this.usersRepository.findById(id);
+
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'User not found',
+      });
+    }
+
+    const deletedUser = await this.usersRepository.softDelete(id);
+
+    return new User(deletedUser);
   }
 }
