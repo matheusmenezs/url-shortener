@@ -10,9 +10,12 @@ services:
     ports:
       - '${DATABASE_PORT}:5432'
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - app-net
+
+volumes:
+  postgres-data:
 
 networks:
   app-net:
