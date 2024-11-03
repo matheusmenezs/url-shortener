@@ -22,8 +22,9 @@ export class CreateUserDto {
     message: 'Username must be a string',
   })
   username: string;
-
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Password123!',
+  })
   @IsNotEmpty({
     message: 'Password is required',
   })
