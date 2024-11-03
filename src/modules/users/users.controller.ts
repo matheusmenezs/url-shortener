@@ -7,20 +7,23 @@ import {
   Param,
   Delete,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { NestResponseBuilder } from 'src/common/interceptors/nestResponseBuilder';
+import { UserPipe } from './user.pipe';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@ApiTags('Users')
 @Controller('users')
+@ApiTags('Users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body(UserPipe) createUserDto: CreateUserDto) {
     const newUser = await this.usersService.create(createUserDto);
 
     const response = new NestResponseBuilder()
@@ -32,7 +35,9 @@ export class UsersController {
     return response;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
+  @ApiBearerAuth()
   async findAll() {
     const allUsers = await this.usersService.findAll();
 
@@ -44,8 +49,10 @@ export class UsersController {
     return response;
   }
 
-  @ApiProperty()
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
+  @ApiBearerAuth()
+  @ApiProperty()
   async findOne(@Param('id') id: string) {
     const userFound = await this.usersService.findById(id);
 
@@ -57,9 +64,14 @@ export class UsersController {
     return response;
   }
 
-  @ApiProperty()
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @ApiBearerAuth()
+  @ApiProperty()
+  async update(
+    @Param('id') id: string,
+    @Body(UserPipe) updateUserDto: UpdateUserDto,
+  ) {
     const updatedUser = await this.usersService.update(id, updateUserDto);
 
     const response = new NestResponseBuilder()
@@ -71,8 +83,9 @@ export class UsersController {
     return response;
   }
 
-  @ApiProperty()
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @ApiBearerAuth()
   @ApiProperty()
   async softDelete(@Param('id') id: string) {
     const deletedUser = await this.usersService.softDelete(id);
