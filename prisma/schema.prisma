@@ -32,8 +32,8 @@ model Url {
   original_url String @unique
   short_url    String @unique
   visits       Int    @default(0)
-  user         User   @relation(fields: [user_id], references: [id])
-  user_id      String
+  user         User?   @relation(fields: [user_id], references: [id])
+  user_id      String?
 
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt

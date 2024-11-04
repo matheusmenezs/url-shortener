@@ -6,9 +6,10 @@ import { PrismaService } from './infra/database/prisma.service';
 import { NestResponseInterceptor } from './common/interceptors/nestResponse.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { AuthModule } from './modules/auth/auth.module';
+import { UrlsModule } from './modules/urls/urls.module';
 
 @Module({
-  imports: [UsersModule, AuthModule],
+  imports: [UsersModule, AuthModule, UrlsModule],
   providers: [
     PrismaService,
     {
