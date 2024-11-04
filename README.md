@@ -51,7 +51,7 @@ If you want to create a new migration, run the command below
 
 ```bash
 npx prisma migrate dev --name migration_name
-
+```
 
 ## Project setup
 
