@@ -29,12 +29,22 @@ export class UrlsService {
   }
 
   async findAll(user?: User) {
-    return await this.urlsRepository.findByUser(user.id);
+    const urlExists = await this.urlsRepository.findByUser(user.id);
+
+    if (!urlExists) {
+      throw new NotFoundException('URL not found');
+    }
+
+    return urlExists;
   }
 
   async findById(id: string) {
     try {
-      return await this.urlsRepository.findById(id);
+      const urlExists = await this.urlsRepository.findById(id);
+      if (!urlExists) {
+        throw new NotFoundException('URL not found');
+      }
+      return urlExists;
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -44,10 +54,13 @@ export class UrlsService {
     try {
       const url = await this.urlsRepository.findByShortUrl(short_url);
 
-      if (url) {
-        url.visits += 1;
-        await this.urlsRepository.update(url);
+      if (!url) {
+        throw new NotFoundException('URL not found');
       }
+
+      url.visits += 1;
+      await this.urlsRepository.update(url);
+
       return url.original_url;
     } catch (error) {
       throw new NotFoundException(error.message);
@@ -61,6 +74,14 @@ export class UrlsService {
       short_url: this.generateShortUrl(),
     };
 
+    const shortUrlExists = await this.urlsRepository.findByShortUrl(
+      urlData.short_url,
+    );
+
+    if (shortUrlExists) {
+      urlData.short_url = this.generateShortUrl();
+    }
+
     const url = await this.urlsRepository.create(urlData);
 
     const response = {
@@ -72,8 +93,14 @@ export class UrlsService {
 
   async update(id: string, data: UpdateUrlDto) {
     const url = await this.findById(id);
+
+    if (!url) {
+      throw new NotFoundException('URL not found');
+    }
+
     url.original_url = data.original_url;
     await this.urlsRepository.update(url);
+
     return url;
   }
 
