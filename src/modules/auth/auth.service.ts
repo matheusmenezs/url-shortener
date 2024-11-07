@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { EncryptData } from 'src/utils/encrypt-data.util';
 import { CreateAuthDto } from './dto/authenticate-user.dto';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -12,16 +13,12 @@ export class AuthService {
     private encryptData: EncryptData,
   ) {}
 
-  async validateUser({ username, password }: CreateAuthDto): Promise<any> {
-    let user = await this.usersService.findByUsername(username);
+  async validateUser({
+    login,
+    password,
+  }: CreateAuthDto): Promise<User | false> {
+    const user = await this.usersService.findByLogin(login);
 
-    if (!user) {
-      user = await this.usersService.findByEmail(username);
-
-      if (!user) {
-        return false;
-      }
-    }
     const passwordHasMatch = await this.encryptData.decrypt(
       password,
       user.password,
@@ -31,7 +28,7 @@ export class AuthService {
       return false;
     }
 
-    return user;
+    return new User(user);
   }
 
   async login(user: any) {

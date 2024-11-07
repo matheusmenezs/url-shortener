@@ -5,7 +5,6 @@ import {
   UseGuards,
   Req,
   HttpStatus,
-  Body,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -14,9 +13,11 @@ import { ApiBody, ApiProperty } from '@nestjs/swagger';
 import { NestResponseBuilder } from 'src/common/interceptors/nestResponseBuilder';
 import { CreateAuthDto } from './dto/authenticate-user.dto';
 
-export class LoginDto {
-  username: string;
-  password: string;
+export interface IUserRequestData {
+  user: {
+    id: string;
+    username: string;
+  };
 }
 
 @Controller()
@@ -28,13 +29,16 @@ export class AuthController {
   @ApiBody({
     type: CreateAuthDto,
     examples: {
-      example: {
+      firstExample: {
+        value: { login: 'user@email.com', password: 'Password123!' },
+      },
+      secondExample: {
         value: { username: 'user', password: 'Password123!' },
       },
     },
   })
-  async login(@Body() authDto: CreateAuthDto, @Req() req: any) {
-    const token = await this.authService.login(req.user);
+  async login(@Req() { user }: IUserRequestData) {
+    const token = await this.authService.login(user);
 
     const response = new NestResponseBuilder()
       .setStatus(HttpStatus.OK)
@@ -47,7 +51,7 @@ export class AuthController {
   @ApiProperty()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Req() req: any) {
+  getProfile(@Req() req: IUserRequestData) {
     return req.user;
   }
 }

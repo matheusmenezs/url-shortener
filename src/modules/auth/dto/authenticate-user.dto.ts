@@ -4,9 +4,9 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class CreateAuthDto {
   @ApiProperty()
   @IsNotEmpty({
-    message: 'Username is missing',
+    message: 'Login is missing',
   })
-  username: string;
+  login: string;
 
   @ApiProperty()
   @IsNotEmpty({
