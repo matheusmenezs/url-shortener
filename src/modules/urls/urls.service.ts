@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUrlDto } from './dto/create-url.dto';
 import { UpdateUrlDto } from './dto/update-url.dto';
 import { User } from '../users/entities/user.entity';
@@ -39,32 +44,30 @@ export class UrlsService {
   }
 
   async findById(id: string) {
-    try {
-      const urlExists = await this.urlsRepository.findById(id);
-      if (!urlExists) {
-        throw new NotFoundException('URL not found');
-      }
-      return urlExists;
-    } catch (error) {
-      throw new NotFoundException(error.message);
+    const urlExists = await this.urlsRepository.findById(id);
+
+    if (!urlExists) {
+      throw new NotFoundException('URL not found');
     }
+
+    return urlExists;
   }
 
   async findByUrl(short_url: string) {
-    try {
-      const url = await this.urlsRepository.findByShortUrl(short_url);
+    const urlExists = await this.urlsRepository.findByShortUrl(short_url);
 
-      if (!url) {
-        throw new NotFoundException('URL not found');
-      }
-
-      url.visits += 1;
-      await this.urlsRepository.update(url);
-
-      return url.original_url;
-    } catch (error) {
-      throw new NotFoundException(error.message);
+    if (!urlExists) {
+      throw new NotFoundException('URL not found');
     }
+
+    urlExists.visits += 1;
+    const updatedUrl = await this.urlsRepository.update(urlExists);
+
+    if (!updatedUrl) {
+      throw new BadRequestException('URL not updated');
+    }
+
+    return updatedUrl?.original_url;
   }
 
   async create(data: CreateUrlDto, user?: User) {
@@ -99,9 +102,9 @@ export class UrlsService {
     }
 
     url.original_url = data.original_url;
-    await this.urlsRepository.update(url);
+    const updatedUrl = await this.urlsRepository.update(url);
 
-    return url;
+    return updatedUrl;
   }
 
   async softDelete(id: string) {
@@ -111,6 +114,8 @@ export class UrlsService {
       throw new NotFoundException('URL not found');
     }
 
-    await this.urlsRepository.softDelete(id);
+    const deletedUrl = await this.urlsRepository.softDelete(id);
+
+    return deletedUrl;
   }
 }
