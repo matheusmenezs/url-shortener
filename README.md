@@ -84,3 +84,7 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## Swagger - API Endpoints
+
+- http://localhost:3000/api

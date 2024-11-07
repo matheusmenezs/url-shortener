@@ -64,6 +64,25 @@ export class UsersService {
     return new User(user);
   }
 
+  async findByLogin(login: string) {
+    let userExists = await this.usersRepository.findByUsername(login);
+
+    if (userExists) {
+      return new User(userExists);
+    }
+
+    userExists = await this.usersRepository.findByEmail(login);
+
+    if (!userExists) {
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'User not found',
+      });
+    }
+
+    return new User(userExists);
+  }
+
   async findByUsername(username: string) {
     const user = await this.usersRepository.findByUsername(username);
 
