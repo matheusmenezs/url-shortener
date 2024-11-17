@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpStatus,
   Inject,
   Injectable,
   NotFoundException,
@@ -71,18 +72,31 @@ export class UrlsService {
   }
 
   async create(data: CreateUrlDto, user?: User) {
+    const urlOriginalExists = await this.urlsRepository.findByOriginalUrl(
+      data.original_url,
+    );
+
+    if (urlOriginalExists) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'URL already registered',
+      });
+    }
+
     const urlData = {
       ...data,
       user_id: user?.id || null,
       short_url: this.generateShortUrl(),
     };
 
-    const shortUrlExists = await this.urlsRepository.findByShortUrl(
+    let shortUrlExists = await this.urlsRepository.findByShortUrl(
       urlData.short_url,
     );
-
-    if (shortUrlExists) {
+    while (shortUrlExists) {
       urlData.short_url = this.generateShortUrl();
+      shortUrlExists = await this.urlsRepository.findByShortUrl(
+        urlData.short_url,
+      );
     }
 
     const url = await this.urlsRepository.create(urlData);
