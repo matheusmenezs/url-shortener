@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   HttpStatus,
   UseGuards,
 } from '@nestjs/common';
@@ -30,20 +29,6 @@ export class UsersController {
       .setStatus(HttpStatus.CREATED)
       .setHeaders({ Location: `/users/${newUser.id}` })
       .setBody(newUser)
-      .build();
-
-    return response;
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get()
-  @ApiBearerAuth()
-  async findAll() {
-    const allUsers = await this.usersService.findAll();
-
-    const response = new NestResponseBuilder()
-      .setStatus(HttpStatus.OK)
-      .setBody(allUsers)
       .build();
 
     return response;
@@ -78,21 +63,6 @@ export class UsersController {
       .setStatus(HttpStatus.OK)
       .setHeaders({ Location: `/users/${updatedUser.id}` })
       .setBody(updatedUser)
-      .build();
-
-    return response;
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  @ApiBearerAuth()
-  @ApiProperty()
-  async softDelete(@Param('id') id: string) {
-    const deletedUser = await this.usersService.softDelete(id);
-
-    const response = new NestResponseBuilder()
-      .setStatus(HttpStatus.OK)
-      .setBody(deletedUser)
       .build();
 
     return response;

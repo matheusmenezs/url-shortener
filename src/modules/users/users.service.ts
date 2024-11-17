@@ -1,4 +1,3 @@
-import { UsersRepository } from './repository/user.repository';
 import {
   BadRequestException,
   HttpStatus,
@@ -9,12 +8,13 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { IUsersRepository } from './repository/i-users-repository';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject('UsersRepository')
-    private readonly usersRepository: UsersRepository,
+    @Inject('IUsersRepository')
+    private readonly usersRepository: IUsersRepository,
   ) {}
 
   async create(createUserDto: CreateUserDto) {

@@ -1,4 +1,4 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { Url } from '@prisma/client';
 import { PrismaService } from 'src/infra/database/prisma.service';
@@ -27,6 +27,12 @@ export class UrlsRepository {
     });
   }
 
+  async findByOriginalUrl(original_url: string) {
+    return this.prisma.url.findUnique({
+      where: { original_url },
+    });
+  }
+
   async findById(id: string) {
     return this.prisma.url.findUnique({
       where: { id },
@@ -35,16 +41,6 @@ export class UrlsRepository {
   }
 
   async create(data: any): Promise<Url> {
-    const urlOriginalExists = await this.prisma.url.findFirst({
-      where: { original_url: data.original_url },
-    });
-
-    if (urlOriginalExists) {
-      throw new BadRequestException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'URL already registered',
-      });
-    }
     return this.prisma.url.create({
       data,
     });

@@ -54,11 +54,11 @@ export class UrlsController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUrlDto: UpdateUrlDto) {
-    const updatedUrls = this.urlsService.update(id, updateUrlDto);
+    const updatedUrl = this.urlsService.update(id, updateUrlDto);
 
     const response = new NestResponseBuilder()
       .setStatus(200)
-      .setBody(updatedUrls)
+      .setBody(updatedUrl)
       .build();
 
     return response;

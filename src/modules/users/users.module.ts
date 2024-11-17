@@ -12,7 +12,7 @@ import { UserPipe } from './user.pipe';
     UsersService,
     PrismaService,
     {
-      provide: 'UsersRepository',
+      provide: 'IUsersRepository',
       useClass: UsersRepository,
     },
     EncryptData,
