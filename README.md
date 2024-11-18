@@ -72,6 +72,13 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## API Documentation
+```bash
+# Access the API documentation by visiting:
+$ localhost:<PORT>/api
+
+```
+
 ## Run tests
 
 ```bash
