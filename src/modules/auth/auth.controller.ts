@@ -9,7 +9,7 @@ import {
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { ApiBody, ApiProperty } from '@nestjs/swagger';
+import { ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { NestResponseBuilder } from 'src/common/interceptors/nestResponseBuilder';
 import { CreateAuthDto } from './dto/authenticate-user.dto';
 
@@ -19,7 +19,7 @@ export interface IUserRequestData {
     username: string;
   };
 }
-
+@ApiTags('auth')
 @Controller()
 export class AuthController {
   constructor(private authService: AuthService) {}

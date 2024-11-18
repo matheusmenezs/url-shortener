@@ -17,7 +17,7 @@ import { UserPipe } from './user.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
-@ApiTags('Users')
+@ApiTags('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

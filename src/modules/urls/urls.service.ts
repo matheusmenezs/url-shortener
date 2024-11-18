@@ -68,7 +68,11 @@ export class UrlsService {
       throw new BadRequestException('URL not updated');
     }
 
-    return updatedUrl?.original_url;
+    const response = {
+      original_url: `${updatedUrl.original_url}`,
+    };
+
+    return response;
   }
 
   async create(data: CreateUrlDto, user?: User) {
