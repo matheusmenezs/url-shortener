@@ -13,8 +13,8 @@ export class PublicUrlsController {
     return this.urlsService.create(createUrlDto);
   }
 
-  @Get(':url')
-  findOne(@Param('url') short_url: string) {
+  @Get(':short_url')
+  findOne(@Param('short_url') short_url: string) {
     return this.urlsService.findByUrl(short_url);
   }
 }
